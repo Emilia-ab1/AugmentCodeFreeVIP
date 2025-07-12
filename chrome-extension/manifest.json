@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Augment Code Auto Login",
+  "version": "1.0.0",
+  "description": "自动登录Augment Code平台，智能获取邮箱验证码",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "nativeMessaging",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://app.augmentcode.com/*",
+    "https://login.augmentcode.com/*",
+    "https://auth.augmentcode.com/*",
+    "https://challenges.cloudflare.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://app.augmentcode.com/*",
+        "https://login.augmentcode.com/*",
+        "https://auth.augmentcode.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Augment Code Auto Login"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["config.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

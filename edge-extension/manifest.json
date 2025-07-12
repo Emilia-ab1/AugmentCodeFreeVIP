@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Augment Code Auto Login (Edge)",
+  "version": "1.0.0",
+  "description": "专为Edge浏览器优化的Augment Code自动登录扩展，智能获取邮箱验证码",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "nativeMessaging",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://app.augmentcode.com/*",
+    "https://login.augmentcode.com/*",
+    "https://auth.augmentcode.com/*",
+    "https://challenges.cloudflare.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://app.augmentcode.com/*",
+        "https://login.augmentcode.com/*",
+        "https://auth.augmentcode.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Augment Code Auto Login (Edge)"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["config.json"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "browser_specific_settings": {
+    "edge": {
+      "browser_action_next_to_addressbar": true
+    }
+  }
+}

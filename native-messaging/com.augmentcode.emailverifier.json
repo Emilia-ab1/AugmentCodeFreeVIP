@@ -1,0 +1,9 @@
+{
+  "name": "com.augmentcode.emailverifier",
+  "description": "Augment Code Email Verification Native Host",
+  "path": "f:\\email_verifier_host.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://pmkfeiplkmdbpeokjefhaoigibnbcjhj/"
+  ]
+}

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Augment Code Auto Login (Edge)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 380px;
+            min-height: 500px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+
+        .edge-badge {
+            background: #0078d4;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .status-value {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .email-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .email-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .refresh-btn:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .refresh-btn.loading .refresh-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .email-value {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #495057;
+            word-break: break-all;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .log-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .log-content {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            border: 1px solid #e9ecef;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            padding: 2px 0;
+        }
+
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .log-time {
+            color: #6c757d;
+            margin-right: 6px;
+        }
+
+        .log-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .log-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        .edge-optimized {
+            background: rgba(0, 120, 212, 0.1);
+            border: 1px solid rgba(0, 120, 212, 0.3);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #0078d4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                🚀 Augment Code 
+                <span class="edge-badge">EDGE</span>
+            </h1>
+            <div class="subtitle">专为Edge浏览器优化的自动登录扩展</div>
+        </div>
+
+        <div class="edge-optimized">
+            ⚡ Edge专用版本 - 增强随机邮箱生成算法
+        </div>
+
+        <div class="status-card">
+            <div class="status-item">
+                <span class="status-label">扩展状态</span>
+                <span id="extensionStatus" class="status-value status-ready">✅ 就绪</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Native Host</span>
+                <span id="nativeHostStatus" class="status-value status-warning">🔄 检测中</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">浏览器</span>
+                <span class="status-value status-ready">🌐 Edge</span>
+            </div>
+        </div>
+
+        <div class="email-section">
+            <div class="email-header">
+                <span class="email-label">📧 随机邮箱</span>
+                <button id="refreshEmailBtn" class="refresh-btn">
+                    <span class="refresh-icon">🔄</span>
+                    刷新
+                </button>
+            </div>
+            <div id="emailValue" class="email-value">生成中...</div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="startLoginBtn" class="btn btn-primary">
+                ▶️ 开始登录
+            </button>
+            <button id="stopLoginBtn" class="btn btn-secondary" disabled>
+                ⏹️ 停止
+            </button>
+        </div>
+
+        <div class="log-section">
+            <div class="log-header">
+                📋 操作日志
+            </div>
+            <div id="logContent" class="log-content">
+                <div class="log-entry">
+                    <span class="log-time">[初始化]</span>
+                    Edge扩展启动中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

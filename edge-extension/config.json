@@ -1,0 +1,92 @@
+{
+  "browser": "edge",
+  "version": "1.0.0",
+  "name": "Augment Code Auto Login (Edge)",
+  "description": "专为Edge浏览器优化的Augment Code自动登录扩展",
+  "features": {
+    "enhancedRandomEmail": true,
+    "edgeOptimized": true,
+    "improvedVerification": true,
+    "nativeMessaging": true
+  },
+  "email": {
+    "domain": "dddd.tools",
+    "algorithm": "edge-enhanced",
+    "entropy": {
+      "timestamp": true,
+      "multipleRandom": true,
+      "edgeSpecific": true
+    },
+    "validation": {
+      "length": 6,
+      "format": "numeric",
+      "uniqueness": true
+    }
+  },
+  "verification": {
+    "delay": 20000,
+    "retries": 3,
+    "timeout": 30000,
+    "cloudflare": {
+      "enabled": true,
+      "waitTime": 60000,
+      "checkInterval": 1000
+    }
+  },
+  "ui": {
+    "theme": "edge",
+    "colors": {
+      "primary": "#0078d4",
+      "secondary": "#106ebe",
+      "success": "#28a745",
+      "warning": "#ffc107",
+      "error": "#dc3545"
+    },
+    "animations": true,
+    "logging": {
+      "enabled": true,
+      "maxEntries": 50,
+      "timestamps": true
+    }
+  },
+  "compatibility": {
+    "edge": {
+      "minVersion": "88.0",
+      "nativeMessaging": true,
+      "manifestV3": true
+    },
+    "chrome": {
+      "fallback": true,
+      "compatibility": "limited"
+    }
+  },
+  "security": {
+    "permissions": {
+      "minimal": true,
+      "required": [
+        "activeTab",
+        "tabs",
+        "storage",
+        "nativeMessaging",
+        "scripting"
+      ]
+    },
+    "hosts": [
+      "https://app.augmentcode.com/*",
+      "https://login.augmentcode.com/*",
+      "https://auth.augmentcode.com/*",
+      "https://challenges.cloudflare.com/*"
+    ]
+  },
+  "nativeHost": {
+    "name": "com.augmentcode.email_verifier",
+    "protocol": "stdio",
+    "timeout": 30000,
+    "retries": 3
+  },
+  "logging": {
+    "level": "info",
+    "console": true,
+    "storage": false
+  }
+}

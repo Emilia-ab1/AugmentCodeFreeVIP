@@ -1,0 +1,61 @@
+{
+  "targetUrl": "https://app.augmentcode.com/",
+  "email": "1810002@newmeng.cn",
+  "loginFlow": {
+    "steps": [
+      {
+        "url": "https://app.augmentcode.com/",
+        "action": "redirect",
+        "description": "重定向到目标网站"
+      },
+      {
+        "url": "https://login.augmentcode.com/u/login/identifier",
+        "action": "fillEmail",
+        "selectors": {
+          "emailInput": "input[name='username'], input[type='email'], #username, #email",
+          "submitButton": "button[type='submit'], input[type='submit'], .submit-button"
+        },
+        "description": "填充邮箱地址并提交"
+      },
+      {
+        "url": "https://login.augmentcode.com/u/login/passwordless-email-challenge",
+        "action": "fillVerificationCode",
+        "selectors": {
+          "codeInput": "input[name='code'], #code, .verification-code-input",
+          "submitButton": "button[type='submit'], input[type='submit'], .submit-button"
+        },
+        "description": "获取并填充验证码"
+      },
+      {
+        "url": "https://auth.augmentcode.com/terms-accept",
+        "action": "acceptTerms",
+        "selectors": {
+          "termsCheckbox": "input[type='checkbox'], #terms-of-service-checkbox, .terms-checkbox",
+          "submitButton": "button[type='submit'], .submit-button"
+        },
+        "description": "接受服务条款"
+      }
+    ]
+  },
+  "timeouts": {
+    "elementWait": 5000,
+    "pageLoad": 10000,
+    "verificationCode": 30000,
+    "humanVerification": 60000
+  },
+  "retries": {
+    "maxRetries": 3,
+    "retryDelay": 2000
+  },
+  "nativeMessaging": {
+    "appName": "com.augmentcode.emailverifier",
+    "timeout": 30000
+  },
+  "captchaDetection": {
+    "cloudflareDomain": "challenges.cloudflare.com",
+    "successStatusCodes": [200],
+    "monitorMethods": ["POST", "GET"],
+    "timeout": 600000,
+    "checkInterval": 500
+  }
+}
