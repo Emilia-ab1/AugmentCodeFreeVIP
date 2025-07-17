@@ -48,6 +48,31 @@ An intelligent Chrome extension for automating the AugmentCode website login pro
 - **Network**: Stable internet connection
 - **Go Environment**: Go 1.19+ (only required for development)
 
+## ⚠️ Important Configuration Notice
+
+**Before you start using this software, you MUST complete the following configurations, otherwise the program will not work properly:**
+
+### 🔑 Required Configuration Checklist
+- [ ] **Domain Email Forwarding**: Configure `*@dddd.tools` forwarding to your personal email
+- [ ] **Personal Email IMAP**: Configure your email IMAP information in the code
+- [ ] **Email Authorization**: Enable IMAP service and obtain app-specific password/authorization code
+- [ ] **Go Environment**: Install Go 1.19+ for compiling Native Host program
+
+**⚡ Quick Configuration Guide**:
+1. Ensure you have administrative access to the `dddd.tools` domain
+2. Set up email forwarding: `*@dddd.tools` → `youremail@gmail.com`
+3. Modify email configuration in `native-messaging/email_verification.go`
+4. Obtain app-specific password or authorization code for your email
+
+**🔍 Configuration Check Tool**:
+```bash
+# Run configuration check script to verify all configurations are correct
+./scripts/config-check.sh    # Linux/Mac
+./scripts/config-check.bat   # Windows
+```
+
+> 📖 **For detailed configuration instructions, please refer to the [📧 Detailed Email Configuration](#-detailed-email-configuration) section below**
+
 ## 🚀 Quick Start
 
 ### 1. Download Project
@@ -134,17 +159,103 @@ AugmentCodeFreeVIP-Extension/
 
 ## 🔧 Configuration
 
-### Email Configuration
-Email configuration in `email_verification.go`:
+### 📧 Detailed Email Configuration
+
+#### 🔄 System Working Principle
+This software uses an **enterprise email forwarding mechanism** to achieve automated verification code retrieval:
+
+1. **Domain Email Generation**: System automatically generates `random-digits@dddd.tools` format emails for registration
+2. **Email Forwarding Setup**: Forward all emails sent to `*@dddd.tools` to your personal mailbox
+3. **Verification Code Retrieval**: Program connects to your personal mailbox via IMAP protocol to get forwarded verification emails
+4. **Automatic Parsing**: Automatically extracts verification codes from emails and completes verification process
+
+#### ⚙️ Required Configuration Steps
+
+##### Step 1: Domain Email Forwarding Setup
+**⚠️ Important: This step must be completed first, otherwise verification emails cannot be received**
+
+You need administrative access to the `dddd.tools` domain and set up email forwarding rules:
+
+**Forwarding Rule Configuration:**
+```
+Source Address: *@dddd.tools
+Target Address: Your personal email (e.g., yourname@gmail.com)
+```
+
+**Common Domain Provider Setup Methods:**
+- **Cloudflare**: DNS → Email Routing → Catch-all address → Set forwarding to personal email
+- **Namecheap**: Domain List → Manage → Redirect Email → Configure catch-all forwarding
+- **GoDaddy**: Email & Office → Email Forwarding → Set wildcard forwarding
+- **AWS Route 53**: Create MX records and configure SES forwarding rules
+
+##### Step 2: Personal Email IMAP Configuration
+Configure your personal email information in `native-messaging/email_verification.go`:
+
 ```go
 config := EmailConfig{
-    Email:          "your-email@domain.com",    // Actual receiving email
-    GeneratedEmail: generateRandomEmail(),      // Generated registration email
-    Password:       "your-password",            // Email password
-    IMAPServer:     "imap.your-server.com",     // IMAP server
-    IMAPPort:       993,                        // IMAP port
+    Email:          "yourname@gmail.com",       // Your personal email (receives forwarded emails)
+    GeneratedEmail: generateRandomEmail(),      // Auto-generated @dddd.tools email
+    Password:       "your-app-password",        // Email password or app-specific password
+    IMAPServer:     "imap.gmail.com",          // IMAP server address
+    IMAPPort:       993,                        // IMAP port (SSL)
 }
 ```
+
+#### 📋 Email Provider Configuration Reference
+
+##### Gmail Configuration
+```go
+config := EmailConfig{
+    Email:      "yourname@gmail.com",
+    Password:   "your-app-password",    // Must use app-specific password
+    IMAPServer: "imap.gmail.com",
+    IMAPPort:   993,
+}
+```
+**Setting up App-Specific Password:**
+1. Login to Google Account → Security → 2-Step Verification
+2. App passwords → Select app and device → Generate password
+3. Use the generated 16-digit password to replace `your-app-password`
+
+##### Outlook/Hotmail Configuration
+```go
+config := EmailConfig{
+    Email:      "yourname@outlook.com",
+    Password:   "your-password",
+    IMAPServer: "outlook.office365.com",
+    IMAPPort:   993,
+}
+```
+
+##### Yahoo Mail Configuration
+```go
+config := EmailConfig{
+    Email:      "yourname@yahoo.com",
+    Password:   "your-app-password",    // Use app-specific password
+    IMAPServer: "imap.mail.yahoo.com",
+    IMAPPort:   993,
+}
+```
+
+#### 🔧 Configuration Verification Testing
+
+After configuration, it's recommended to perform verification testing:
+
+1. **Send Test Email**:
+   ```bash
+   # Send test email to generated @dddd.tools address
+   echo "Test content" | mail -s "Test subject" 123456@dddd.tools
+   ```
+
+2. **Check if Forwarding Works**:
+   - Check if your personal mailbox receives the forwarded test email
+   - Confirm email source shows as `123456@dddd.tools`
+
+3. **Test IMAP Connection**:
+   ```bash
+   # Run in native-messaging directory
+   go run email_verification.go
+   ```
 
 ### Extension Configuration
 The extension automatically generates random emails, no manual configuration needed. Modify relevant parameters if customization is required.
